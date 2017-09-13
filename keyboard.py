@@ -1,4 +1,5 @@
 import extronlib
+from extronlib import event
 
 class Keyboard():
     '''
@@ -27,6 +28,7 @@ class Keyboard():
         self.CapsLock = True  # default caps lock setting at boot-up
         self.ShiftMode = 'Upper'
         self._password_mode = False
+        self._stringChangesCallback = None
 
         # Clear Key
         if ClearID is not None:
@@ -180,6 +182,7 @@ class Keyboard():
         self.string = ''
         self.ShiftID = 'Upper'
         self._updateLabel()
+        self._DoStringChangesCallback()
 
     def AppendToString(self, character=''):
         '''
@@ -188,6 +191,7 @@ class Keyboard():
         # print('Keyboard.AppendToString()')
         self.string += character
         self._updateLabel()
+        self._DoStringChangesCallback()
 
     def DeleteCharacter(self):
         '''
@@ -197,6 +201,7 @@ class Keyboard():
         self.string = self.string[0:len(self.string) - 1]
         print('deleteCharacter after=', self.string)
         self._updateLabel()
+        self._DoStringChangesCallback()
 
     def _updateLabel(self):
         '''
@@ -239,6 +244,7 @@ class Keyboard():
         # Update the TLP
         self.FeedbackObject = NewFeedbackObject
         self._updateLabel()
+        self._DoStringChangesCallback()
 
     def GetFeedbackObject(self):
         return self.FeedbackObject
@@ -246,3 +252,14 @@ class Keyboard():
     def SetPasswordMode(self, mode):
         self._password_mode = mode
 
+    def _DoStringChangesCallback(self):
+        if callable(self._stringChangesCallback):
+            self._stringChangesCallback(self, self.GetString())
+
+    @property
+    def StringChanges(self):
+        return self._stringChangesCallback
+
+    @StringChanges.setter
+    def StringChanges(self, func):
+        self._stringChangesCallback = func
