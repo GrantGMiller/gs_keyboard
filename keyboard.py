@@ -38,6 +38,8 @@ class Keyboard():
             def clearPressed(button, state):
                 # print(button.Name, state)
                 self.ClearString()
+        else:
+            self.bClear = None
 
         # Delete key
         @event(self.bDelete, 'Pressed')
@@ -220,11 +222,12 @@ class Keyboard():
                 # print('self.FeedbackObject=', self.FeedbackObject)
 
         if len(self.GetString()) == 0:
-            if self.bClear.Visible:
-                self.bClear.SetVisible(False)
-        else:
-            if not self.bClear.Visible:
-                self.bClear.SetVisible(True)
+            if self.bClear is not None:
+                if self.bClear.Visible:
+                    self.bClear.SetVisible(False)
+                else:
+                    if not self.bClear.Visible:
+                        self.bClear.SetVisible(True)
 
     def SetFeedbackObject(self, NewFeedbackObject):
         '''
