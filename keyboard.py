@@ -9,8 +9,15 @@ class Keyboard():
         This will allow the programmer to copy/paste the keyboard GUI page into their GUID project without worrying about the KeyIDs
         '''
 
-    def __init__(self, TLP=None, KeyIDs=[], BackspaceID=None, ClearID=None, FeedbackObject=None, SpaceBarID=None,
-                 ShiftID=None):
+    def __init__(self,
+            TLP=None,
+            KeyIDs=[],
+            BackspaceID=None,
+            ClearID=None,
+            FeedbackObject=None,
+            SpaceBarID=None,
+            ShiftID=None
+            ):
         print('Keyboard object initializing')
 
         self.TLP = TLP
@@ -253,6 +260,7 @@ class Keyboard():
         return self.FeedbackObject
 
     def SetPasswordMode(self, mode):
+        # mode = bool
         self._password_mode = mode
 
     def _DoStringChangesCallback(self):
