@@ -274,3 +274,7 @@ class Keyboard():
     @StringChanges.setter
     def StringChanges(self, func):
         self._stringChangesCallback = func
+
+    @property
+    def PasswordMode(self):
+        return self._password_mode
