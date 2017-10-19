@@ -1,6 +1,10 @@
 import extronlib
 from extronlib import event
 
+debug = False
+if not debug:
+    print = lambda *a, **k: None
+
 class Keyboard():
     '''
         An object that manages the keyboard buttons.
