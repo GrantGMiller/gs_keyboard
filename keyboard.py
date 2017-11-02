@@ -20,7 +20,7 @@ class Keyboard():
             ClearID=None,
             FeedbackObject=None,
             SpaceBarID=None,
-            ShiftID=None
+            ShiftID=None,
             ):
         print('Keyboard object initializing')
 
