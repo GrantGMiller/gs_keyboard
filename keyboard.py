@@ -187,6 +187,11 @@ class Keyboard():
         # print('Keyboard.GetString()=',self.string)
         return self.string
 
+    def SetString(self, s):
+        self.string = s
+        self._updateLabel()
+        self._DoStringChangesCallback()
+
     def ClearString(self):
         '''
         clear the keyboard buffer
