@@ -5,6 +5,7 @@ debug = False
 if not debug:
     print = lambda *a, **k: None
 
+
 class Keyboard():
     '''
         An object that manages the keyboard buttons.
@@ -14,14 +15,14 @@ class Keyboard():
         '''
 
     def __init__(self,
-            TLP=None,
-            KeyIDs=[],
-            BackspaceID=None,
-            ClearID=None,
-            FeedbackObject=None,
-            SpaceBarID=None,
-            ShiftID=None,
-            ):
+                 TLP=None,
+                 KeyIDs=[],
+                 BackspaceID=None,
+                 ClearID=None,
+                 FeedbackObject=None,
+                 SpaceBarID=None,
+                 ShiftID=None,
+                 ):
         print('Keyboard object initializing')
 
         self.TLP = TLP
@@ -170,7 +171,7 @@ class Keyboard():
 
             for button in self.KeyButtons:
                 Char = button.Name
-                #print('Keyboard.updateKeysShiftMode Char=', Char)
+                # print('Keyboard.updateKeysShiftMode Char=', Char)
                 if Char:
                     if self.ShiftID is not None:
                         if self.ShiftMode == 'Upper':
