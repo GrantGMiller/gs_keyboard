@@ -238,13 +238,13 @@ class Keyboard():
                 self.FeedbackObject.SetText(self.GetString())
                 # print('self.FeedbackObject=', self.FeedbackObject)
 
-        if len(self.GetString()) == 0:
-            if self.bClear is not None:
+        if self.bClear is not None:
+            if len(self.GetString()) == 0:
                 if self.bClear.Visible:
-                    self.bClear.SetVisible(False)
-                else:
-                    if not self.bClear.Visible:
-                        self.bClear.SetVisible(True)
+                        self.bClear.SetVisible(False)
+            else:
+                if not self.bClear.Visible:
+                    self.bClear.SetVisible(True)
 
     def SetFeedbackObject(self, NewFeedbackObject):
         '''
@@ -288,3 +288,4 @@ class Keyboard():
     @property
     def PasswordMode(self):
         return self._password_mode
+
