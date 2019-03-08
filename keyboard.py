@@ -6,7 +6,7 @@ if not debug:
     print = lambda *a, **k: None
 
 
-class Keyboard():
+class Keyboard:
     '''
         An object that manages the keyboard buttons.
         If a keyboard button is pressed, self.string will be updated accordingly.
