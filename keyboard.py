@@ -72,9 +72,14 @@ class Keyboard:
                 # Spacebar
 
         if SpaceBarID is not None:
-            @event(extronlib.ui.Button(TLP, SpaceBarID), 'Pressed')
+            @event(extronlib.ui.Button(TLP, SpaceBarID), ['Pressed', 'Released'])
             def SpacePressed(button, state):
                 # print(button.Name, state)
+                if state == 'Pressed':
+                    button.SetState(1)
+                elif state == 'Released':
+                    button.SetState(0)
+
                 self.AppendToString(' ')
 
         # Character Keys
