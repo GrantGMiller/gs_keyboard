@@ -11,7 +11,7 @@ class Keyboard:
         An object that manages the keyboard buttons.
         If a keyboard button is pressed, self.string will be updated accordingly.
 
-        This will allow the programmer to copy/paste the keyboard GUI page into their GUID project without worrying about the KeyIDs
+        This will allow the programmer to copy/paste the keyboard GUI page into their GUID project without worrying about the __KeyIDs
         '''
 
     def __init__(self,
@@ -22,13 +22,19 @@ class Keyboard:
                  FeedbackObject=None,
                  SpaceBarID=None,
                  ShiftID=None,
+                 SymbolID=None
                  ):
         print('Keyboard object initializing')
 
         self.TLP = TLP
-        self.KeyIDs = KeyIDs
-        self.KeyButtons = []
+        self.__KeyIDs = KeyIDs
+        self.__KeyButtons = []
         self.ShiftID = ShiftID
+
+        self.__SymbolID = SymbolID
+        self.__allSymbols = []
+        self.__symbolMode = False
+
         self.FeedbackObject = FeedbackObject
 
         self.TextFields = {}  # Format: {FeedbackObject : 'Text'}, this keeps track of the text on various Label objects.
@@ -93,15 +99,18 @@ class Keyboard:
                 Char = button.Name
                 if Char is not None:
                     if ShiftID is not None:
-                        if self.ShiftMode == 'Upper':
-                            Char = Char.upper()
+                        if self.__symbolMode is True:
+                            Char = self.__GetButtonSymbol(button)
                         else:
-                            Char = Char.lower()
+                            if self.ShiftMode == 'Upper':
+                                Char = Char.upper()
+                            else:
+                                Char = Char.lower()
 
                     self.AppendToString(Char)
 
             elif state == 'Released':
-                if self.CapsLock == False:
+                if self.CapsLock is False:
                     if self.ShiftMode == 'Upper':
                         self.ShiftMode = 'Lower'
                         self.updateKeysShiftMode()
@@ -115,7 +124,7 @@ class Keyboard:
             NewButton = extronlib.ui.Button(TLP, ID)
             NewButton.Pressed = CharacterPressed
             NewButton.Released = CharacterPressed
-            self.KeyButtons.append(NewButton)
+            self.__KeyButtons.append(NewButton)
 
         # Shift Key
         if ShiftID is not None:
@@ -164,7 +173,36 @@ class Keyboard:
 
             self.updateKeysShiftMode()
 
+        if self.__SymbolID is not None:
+            self.__allSymbols.extend([chr(i) for i in range(33, 47 + 1)])
+            self.__allSymbols.extend([chr(i) for i in range(58, 64 + 1)])
+            self.__allSymbols.extend([chr(i) for i in range(91, 96 + 1)])
+            self.__allSymbols.extend([chr(i) for i in range(123, 126 + 1)])
+
+            self.__SymbolButton = extronlib.ui.Button(TLP, self.__SymbolID)
+
+            @event(self.__SymbolButton, 'Pressed')
+            def SymbolButtonEvent(button, state):
+
+                self.__symbolMode = not self.__symbolMode
+                button.SetState(int(self.__symbolMode))
+
+                if self.__symbolMode:
+                    for index, btn in enumerate(self.__KeyButtons):
+                        btn.SetText(self.__GetButtonSymbol(btn))
+                else:
+                    for btn in self.__KeyButtons:
+                        if self.ShiftMode == 'Upper' or self.CapsLock:
+                            btn.SetText(btn.Name.upper())
+                        else:
+                            btn.SetText(btn.Name.lower())
+
         self._updateLabel()
+
+    def __GetButtonSymbol(self, btn):
+        index = self.__KeyButtons.index(btn)
+        index = index - len(self.__allSymbols)
+        return self.__allSymbols[index]
 
     def updateKeysShiftMode(self):
         if self.ShiftID is not None:
@@ -174,7 +212,7 @@ class Keyboard:
             elif self.ShiftMode == 'Lower':
                 self.ShiftKey.SetState(0)
 
-            for button in self.KeyButtons:
+            for button in self.__KeyButtons:
                 Char = button.Name
                 # print('Keyboard.updateKeysShiftMode Char=', Char)
                 if Char:
@@ -246,7 +284,7 @@ class Keyboard:
         if self.bClear is not None:
             if len(self.GetString()) == 0:
                 if self.bClear.Visible:
-                        self.bClear.SetVisible(False)
+                    self.bClear.SetVisible(False)
             else:
                 if not self.bClear.Visible:
                     self.bClear.SetVisible(True)
@@ -293,4 +331,3 @@ class Keyboard:
     @property
     def PasswordMode(self):
         return self._password_mode
-
