@@ -1,7 +1,7 @@
 import extronlib
 from extronlib import event
 
-debug = False
+debug = True
 if not debug:
     print = lambda *a, **k: None
 
@@ -16,7 +16,7 @@ class Keyboard:
 
     def __init__(self,
                  TLP=None,
-                 KeyIDs=[],
+                 KeyIDs=None,
                  BackspaceID=None,
                  ClearID=None,
                  FeedbackObject=None,
@@ -27,7 +27,7 @@ class Keyboard:
         print('Keyboard object initializing')
 
         self.TLP = TLP
-        self.__KeyIDs = KeyIDs
+        self.__KeyIDs = KeyIDs if KeyIDs is not None else []
         self.__KeyButtons = []
         self.ShiftID = ShiftID
 
@@ -54,7 +54,7 @@ class Keyboard:
 
             @event(self.bClear, 'Pressed')
             def clearPressed(button, state):
-                # print(button.Name, state)
+                print(button.Name, state)
                 self.ClearString()
         else:
             self.bClear = None
@@ -86,7 +86,7 @@ class Keyboard:
                 elif state == 'Released':
                     button.SetState(0)
 
-                self.AppendToString(' ')
+                    self.AppendToString(' ')
 
         # Character Keys
         def CharacterPressed(button, state):
@@ -139,16 +139,18 @@ class Keyboard:
                 # print('Before self.CapsLock=', self.CapsLock)
                 # print('Before self.ShiftMode=', self.ShiftMode)
 
+                self.__symbolMode = False
+
                 if state == 'Pressed':
                     button.SetState(1)
                     button.SetState(0)
 
                 elif state == 'Tapped':
-                    if self.CapsLock == True:
+                    if self.CapsLock is True:
                         self.CapsLock = False
                         self.ShiftMode = 'Lower'
 
-                    elif self.CapsLock == False:
+                    elif self.CapsLock is False:
                         if self.ShiftMode == 'Upper':
                             self.ShiftMode = 'Lower'
 
@@ -174,6 +176,8 @@ class Keyboard:
             self.updateKeysShiftMode()
 
         if self.__SymbolID is not None:
+            for i in range(10):
+                self.__allSymbols.append(str(i))
             self.__allSymbols.extend([chr(i) for i in range(33, 47 + 1)])
             self.__allSymbols.extend([chr(i) for i in range(58, 64 + 1)])
             self.__allSymbols.extend([chr(i) for i in range(91, 96 + 1)])
@@ -186,16 +190,29 @@ class Keyboard:
 
                 self.__symbolMode = not self.__symbolMode
                 button.SetState(int(self.__symbolMode))
+                self._SetSymbols()
 
-                if self.__symbolMode:
-                    for index, btn in enumerate(self.__KeyButtons):
-                        btn.SetText(self.__GetButtonSymbol(btn))
-                else:
-                    for btn in self.__KeyButtons:
-                        if self.ShiftMode == 'Upper' or self.CapsLock:
-                            btn.SetText(btn.Name.upper())
-                        else:
-                            btn.SetText(btn.Name.lower())
+    def _SetSymbols(self):
+
+        if self.__symbolMode:
+            print('going into symbol mode')
+            for btn in self.__KeyButtons:
+                btn.SetText(self.__GetButtonSymbol(btn))
+        else:
+            print('coming out of symbol mode, to alpha mode')
+            for btn in self.__KeyButtons:
+
+                if btn.Name is None:
+                    print('206 btn.ID=', btn.ID)
+
+                if btn.Name.isalpha():
+                    if self.ShiftMode == 'Upper' or self.CapsLock:
+                        btn.SetText(btn.Name.upper())
+                    else:
+                        btn.SetText(btn.Name.lower())
+                else:  # except Exception as e:
+                    # print('205 Keyboard Exception:', e, ', button.ID=', btn.ID)
+                    btn.SetText(btn.Name)
 
         self._updateLabel()
 
