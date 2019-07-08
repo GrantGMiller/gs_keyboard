@@ -192,6 +192,12 @@ class Keyboard:
                 button.SetState(int(self.__symbolMode))
                 self._SetSymbols()
 
+    def SetSymbolMode(self, state):
+        self.__symbolMode = bool(state)
+        if self.__SymbolButton:
+            self.__SymbolButton.SetState(int(self.__symbolMode))
+        self._SetSymbols()
+
     def _SetSymbols(self):
 
         if self.__symbolMode:
