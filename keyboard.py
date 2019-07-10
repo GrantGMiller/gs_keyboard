@@ -54,7 +54,7 @@ class Keyboard:
 
             @event(self.bClear, 'Pressed')
             def clearPressed(button, state):
-                print(button.Name, state)
+                print('57 clearPressed(', button, state)
                 self.ClearString()
         else:
             self.bClear = None
