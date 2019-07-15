@@ -111,9 +111,10 @@ class Keyboard:
 
             elif state == 'Released':
                 if self.CapsLock is False:
-                    if self.ShiftMode == 'Upper':
-                        self.ShiftMode = 'Lower'
-                        self.updateKeysShiftMode()
+                    if self.__symbolMode is False:
+                        if self.ShiftMode == 'Upper':
+                            self.ShiftMode = 'Lower'
+                            self.updateKeysShiftMode()
 
                 button.SetState(0)
 
