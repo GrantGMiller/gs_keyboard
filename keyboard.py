@@ -1,7 +1,10 @@
+import time
+
 import extronlib
 from extronlib import event
+import string
 
-debug = True
+debug = False
 if not debug:
     print = lambda *a, **k: None
 
@@ -47,6 +50,8 @@ class Keyboard:
         self.ShiftMode = 'Upper'
         self._password_mode = False
         self._stringChangesCallback = None
+        self._keyPressedCallback = None
+        self._keyPressedCallbackEnable = True
 
         # Clear Key
         if ClearID is not None:
@@ -74,8 +79,9 @@ class Keyboard:
 
             if state in ['Pressed', 'Repeated']:
                 self.DeleteCharacter()
+                self._KeyPressed('backspace')
 
-                # Spacebar
+        # Spacebar
 
         if SpaceBarID is not None:
             @event(extronlib.ui.Button(TLP, SpaceBarID), ['Pressed', 'Released'])
@@ -141,9 +147,11 @@ class Keyboard:
                 # print('Before self.ShiftMode=', self.ShiftMode)
 
                 self.__symbolMode = False
+                self.__SymbolButton.SetState(0)
 
                 if state == 'Pressed':
                     button.SetState(1)
+                    time.sleep(0.1)
                     button.SetState(0)
 
                 elif state == 'Tapped':
@@ -223,6 +231,15 @@ class Keyboard:
 
         self._updateLabel()
 
+    def _KeyPressed(self, key):
+        '''
+
+        :param key: str; should be on of these possible values: https://pyautogui.readthedocs.io/en/latest/keyboard.html
+        :return:
+        '''
+        if self._keyPressedCallback and self._keyPressedCallbackEnable:
+            self._keyPressedCallback(self, key)
+
     def __GetButtonSymbol(self, btn):
         index = self.__KeyButtons.index(btn)
         index = index - len(self.__allSymbols)
@@ -278,6 +295,7 @@ class Keyboard:
         self.string += character
         self._updateLabel()
         self._DoStringChangesCallback()
+        self._KeyPressed(character)
 
     def DeleteCharacter(self):
         '''
@@ -351,6 +369,17 @@ class Keyboard:
     @StringChanges.setter
     def StringChanges(self, func):
         self._stringChangesCallback = func
+
+    @property
+    def KeyPressed(self):
+        return self._keyPressedCallback
+
+    @KeyPressed.setter
+    def KeyPressed(self, func):
+        self._keyPressedCallback = func
+
+    def EnableKeyPressedCallback(self, state):
+        self._keyPressedCallbackEnable = state
 
     @property
     def PasswordMode(self):
