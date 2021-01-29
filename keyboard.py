@@ -1,5 +1,4 @@
 import time
-
 import extronlib
 from extronlib import event
 import string
